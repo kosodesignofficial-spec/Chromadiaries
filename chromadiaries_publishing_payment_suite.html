@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChromaDiaries Publishing & Payment Suite</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter, Outfit & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- html2canvas for High-Res PNG Exports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-brand {
+      font-family: 'Outfit', sans-serif;
+    }
+    .font-poppins {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Subtle noise/texture for the Payment Poster royal blue upper section */
+    .texture-bg {
+      background-color: #0046b8;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 65%),
+        radial-gradient(#003a9e 15%, transparent 16%);
+      background-size: 100% 100%, 8px 8px;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Fixed dimensions for Letter preview */
+    .a4-container {
+      width: 794px;
+      min-width: 794px;
+      height: 1123px;
+      min-height: 1123px;
+    }
+
+    /* Interactive tabs underline transition */
+    .tab-btn.active {
+      color: #38bdf8;
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Print styles for Selection Letter */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- ============================================================ -->
+  <!-- TOP UNIFIED NAVIGATION HEADER                                -->
+  <!-- ============================================================ -->
+  <header class="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
+    <div class="flex items-center space-x-3">
+      <!-- Main ChromaDiaries Pen & Leaf Emblem -->
+      <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center p-1.5 shadow-md shadow-blue-500/10">
+        <svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 62L48 24C49 22 52 22 53 24L79 62C81 65 79 69 75 69L26 69C22 69 20 65 22 62Z" fill="#38bdf8"/>
+          <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+          <path d="M50 55L50 69" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M52 24C52 24 57 14 69 13C69 13 70 24 58 27C55 27 53 25 52 24Z" fill="#84cc16"/>
+          <path d="M48 25C48 25 41 17 33 19C33 19 32 28 43 29C46 29 47 27 48 25Z" fill="#a3e635"/>
+        </svg>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-base sm:text-lg font-bold text-white tracking-tight leading-none font-brand">ChromaDiaries</h1>
+          <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">Publishing Suite</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-0.5">Unified Studio: Payment Posters & Editorial Selection Letters</p>
+      </div>
+    </div>
+
+    <!-- Active Tool Tabs Switcher -->
+    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+      <button id="tabPaymentBtn" onclick="switchTab('payment')" class="tab-btn active px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-300 border border-transparent transition-all">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <span>Payment Poster Studio</span>
+      </button>
+
+      <button id="tabLetterBtn" onclick="switchTab('letter')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 border border-transparent transition-all hover:text-slate-200">
+        <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>Selection Letter Studio</span>
+      </button>
+    </div>
+
+    <!-- Quick Synchronize author / recipient helper -->
+    <div class="hidden md:flex items-center gap-2">
+      <button onclick="syncAuthorNames()" title="Sync Receiver Name with Author Name" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+        </svg>
+        <span>Sync Names Between Studios</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- MAIN WORKSPACE CONTAINER                                     -->
+  <!-- ============================================================ -->
+  <main class="flex-1 flex flex-col overflow-hidden relative">
+
+    <!-- ========================================================== -->
+    <!-- VIEW 1: PAYMENT RECEIPT POSTER STUDIO                      -->
+    <!-- ========================================================== -->
+    <div id="paymentStudioView" class="flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-7xl w-full mx-auto">
+      
+      <!-- Left Controls Panel -->
+      <div class="lg:col-span-6 bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-5 md:p-6 space-y-6">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Payment Poster Controls</h2>
+            <p class="text-xs text-slate-400">Generate 9:16 mobile story & social proof cards</p>
+          </div>
+          <button id="pResetBtn" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition border border-slate-700">
+            Reset Sample
+          </button>
+        </div>
+
+        <!-- Section 1: Amount & Receiver -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">1</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Amount & Receiver</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Amount (₹)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-slate-400 font-bold">₹</span>
+                <input type="text" id="pInputAmount" value="200" class="w-full pl-7 pr-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold" placeholder="200">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Receiver Name</label>
+              <input type="text" id="pInputReceiverName" value="Muhammed Hashir" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium" placeholder="Receiver full name">
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Receiver UPI ID</label>
+              <input type="text" id="pInputReceiverUPI" value="80868636@gam" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="user@okhdfcbank">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Branding & Allowance Note -->
+        <div class="border-t border-slate-800 pt-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">2</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Brand Logo & Content</span>
+            </div>
+          </div>
+
+          <!-- Logo Upload Box -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-slate-200">Custom Brand Logo</label>
+              <button id="pResetLogoBtn" type="button" class="text-xs text-sky-400 hover:text-sky-300 font-medium">Use Default Logo</button>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <input type="file" id="pLogoUploadInput" accept="image/*" class="text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="text-xs text-slate-400 min-w-[70px]">Logo Size</label>
+              <input type="range" id="pLogoSizeSlider" min="28" max="72" value="44" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500">
+              <span id="pLogoSizeVal" class="text-xs text-slate-400 font-mono w-8">44px</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Brand Main Title</label>
+              <input type="text" id="pInputBrandTitle" value="ChromaDiaries" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold" placeholder="ChromaDiaries">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Brand Tagline</label>
+              <input type="text" id="pInputBrandSubtitle" value="Web Magazine" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Web Magazine">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Badge Headline</label>
+            <input type="text" id="pInputHeadline" value="AUTHOR ALLOWANCE PAID" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold uppercase tracking-wide">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Description / Appreciation Note</label>
+            <textarea id="pInputDescription" rows="2" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed">A small appreciation for your writing and an encouragement to keep creating.</textarea>
+          </div>
+        </div>
+
+        <!-- Section 3: Sender & Transaction Details -->
+        <div class="border-t border-slate-800 pt-5 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">3</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Sender & Transaction Info</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Sender Name</label>
+              <input type="text" id="pInputSenderName" value="Naseef Ugrapuram" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Sender UPI ID</label>
+              <input type="text" id="pInputSenderUPI" value="8086636371@fam" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-300">Date & Time Stamp</label>
+              <button id="pSetNowBtn" type="button" class="text-xs text-sky-400 hover:text-sky-300 font-medium hover:underline">
+                Use Current Time
+              </button>
+            </div>
+            <input type="text" id="pInputDateTime" value="30 September 2026, 14:45 PM" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">UPI Transaction ID / Ref Number</label>
+            <div class="flex gap-2">
+              <input type="text" id="pInputTxnId" value="gddgddgddgdgd" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+              <button id="pGenerateTxnBtn" type="button" title="Generate random ID" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold transition border border-slate-700">
+                Random
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Authorized Signature -->
+        <div class="border-t border-slate-800 pt-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">4</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Authorized Signature</span>
+            </div>
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="pToggleSignCheckbox" checked class="w-4 h-4 text-blue-600 rounded bg-slate-950 border-slate-700 focus:ring-blue-500">
+              <span class="text-xs font-medium text-slate-300">Show Sign</span>
+            </label>
+          </div>
+
+          <div id="pSignControlsContainer" class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-200 mb-1">Upload Signature Image (PNG/JPEG)</label>
+              <div class="flex items-center gap-2">
+                <input type="file" id="pSignUploadInput" accept="image/*" class="text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                <button id="pResetSignBtn" type="button" class="text-xs text-sky-400 hover:underline">Default Sign</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Signatory Title</label>
+                <input type="text" id="pInputSignTitle" value="Authorized Signatory" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Signature Width</label>
+                <div class="flex items-center gap-2">
+                  <input type="range" id="pSignSizeSlider" min="50" max="150" value="95" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                  <span id="pSignSizeVal" class="text-xs text-slate-400 font-mono w-9">95px</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Action Bar -->
+        <div class="pt-4 border-t border-slate-800 flex flex-col gap-3">
+          <button id="pDownloadBtn" class="w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/30 transition active:scale-[0.99]">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download High-Res Poster (PNG 3x)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Poster Live Preview Column -->
+      <div class="lg:col-span-6 flex flex-col items-center">
+        <div class="w-full flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Poster Preview</span>
+          <span class="text-xs text-slate-500 font-mono">Format: 9:16 Social Card</span>
+        </div>
+
+        <!-- Container for preview -->
+        <div class="p-4 sm:p-6 bg-slate-900 rounded-3xl border border-slate-800 flex justify-center w-full shadow-2xl overflow-hidden">
+          
+          <!-- POSTER ELEMENT (Target for html2canvas) -->
+          <div id="posterElement" class="w-[390px] max-w-full bg-white rounded-[28px] overflow-hidden shadow-2xl relative select-none flex flex-col" style="min-height: 740px;">
+            
+            <!-- TOP BLUE SECTION -->
+            <div class="texture-bg text-white pt-10 pb-16 px-6 relative flex flex-col items-center text-center">
+              
+              <!-- Checkmark Circle Icon -->
+              <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg shadow-blue-900/30 mb-5">
+                <svg class="w-10 h-10 text-[#0046b8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+
+              <!-- Amount Text -->
+              <div class="text-[44px] font-extrabold tracking-tight leading-none mb-4 flex items-center justify-center">
+                <span>₹</span>
+                <span id="pPreviewAmount">200</span>
+              </div>
+
+              <!-- Recipient Information -->
+              <div class="space-y-1">
+                <div class="text-[17px] font-normal text-blue-50/95 tracking-wide">
+                  Paid to <span id="pPreviewReceiverName" class="font-medium">Muhammed Hashir</span>
+                </div>
+                <div class="text-[14px] text-blue-100/80 font-normal">
+                  UPI ID: <span id="pPreviewReceiverUPI">80868636@gam</span>
+                </div>
+              </div>
+
+              <!-- Curved Bottom Cutout Shape -->
+              <div class="absolute -bottom-0.5 left-0 right-0 h-12 bg-white rounded-t-[50px] flex items-center justify-center"></div>
+
+              <!-- Center Chevron Indicator -->
+              <div class="absolute -bottom-3.5 left-1/2 -translate-x-1/2 w-11 h-11 rounded-full bg-[#0046b8] border-[3px] border-white flex items-center justify-center shadow-md z-10">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 15l-6-6-6 6"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- MIDDLE SECTION (Brand, Note & Headline) -->
+            <div class="bg-white px-8 pt-8 pb-7 flex-1 flex flex-col items-center justify-center text-center">
+              
+              <!-- Brand Logo & Name Area -->
+              <div class="flex items-center gap-3.5 mb-6 mt-1">
+                <div id="pLogoWrapper" class="relative flex-shrink-0 flex items-center justify-center" style="width: 44px; height: 44px;">
+                  <!-- Default SVG Logo -->
+                  <svg id="pDefaultLogoSvg" viewBox="0 0 100 100" class="w-full h-full drop-shadow-sm" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 62L48 24C49 22 52 22 53 24L79 62C81 65 79 69 75 69L26 69C22 69 20 65 22 62Z" fill="#383838"/>
+                    <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+                    <path d="M50 55L50 69" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M52 24C52 24 57 14 69 13C69 13 70 24 58 27C55 27 53 25 52 24Z" fill="#758A46"/>
+                    <path d="M48 25C48 25 41 17 33 19C33 19 32 28 43 29C46 29 47 27 48 25Z" fill="#93A861"/>
+                  </svg>
+                  <!-- Custom Uploaded Image -->
+                  <img id="pCustomLogoImg" class="hidden w-full h-full object-contain rounded-md" alt="Brand Logo">
+                </div>
+
+                <div class="text-left leading-tight">
+                  <div id="pPreviewBrandTitle" class="text-[23px] font-extrabold text-slate-800 tracking-tight font-brand">ChromaDiaries</div>
+                  <div id="pPreviewBrandSubtitle" class="text-[13px] font-normal text-slate-500 tracking-wide">Web Magazine</div>
+                </div>
+              </div>
+
+              <!-- Allowance Title -->
+              <div id="pPreviewHeadline" class="text-[15px] font-bold text-[#0046b8] tracking-wider mb-2.5 uppercase font-brand">
+                AUTHOR ALLOWANCE PAID
+              </div>
+
+              <!-- Allowance Subtext -->
+              <div id="pPreviewDescription" class="text-[13.5px] text-slate-700 leading-snug max-w-[280px] font-normal">
+                A small appreciation for your writing and an encouragement to keep creating.
+              </div>
+            </div>
+
+            <!-- BOTTOM SECTION: Sender Details Box with Signature -->
+            <div class="bg-[#ebecee] py-4 px-6 border-t border-slate-200/60">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-left">
+                  <div class="text-[12px] font-semibold text-slate-700 uppercase tracking-wide">From</div>
+                  <div id="pPreviewSenderName" class="text-[15px] font-medium text-slate-800 leading-tight">Naseef Ugrapuram</div>
+                  <div class="text-[12.5px] text-slate-600 mt-0.5">
+                    UPI ID: <span id="pPreviewSenderUPI">8086636371@fam</span>
+                  </div>
+                </div>
+
+                <!-- Signature Block -->
+                <div id="pPreviewSignBlock" class="flex flex-col items-center justify-center flex-shrink-0">
+                  <div class="relative flex items-center justify-center mb-0.5" style="min-height: 38px;">
+                    <svg id="pDefaultSignSvg" viewBox="0 0 160 50" class="h-10 text-slate-800" style="width: 95px;" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 35 C20 10, 30 5, 45 25 C55 38, 70 12, 85 28 C95 38, 110 18, 130 22 C145 25, 120 40, 150 36"/>
+                      <path d="M35 32 C60 30, 95 31, 135 29" stroke-width="1.2"/>
+                    </svg>
+                    <img id="pCustomSignImg" class="hidden object-contain" style="max-height: 48px; width: 95px;" alt="Signature">
+                  </div>
+                  <div id="pPreviewSignTitle" class="text-[10px] text-slate-500 font-medium tracking-wide uppercase border-t border-slate-300 pt-0.5 text-center">
+                    Authorized Signatory
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER: Date and Transaction ID -->
+            <div class="bg-white py-5 px-6 text-center space-y-1">
+              <div id="pPreviewDateTime" class="text-[13.5px] font-medium text-slate-700">
+                30 September 2026, 14:45 PM
+              </div>
+              <div class="text-[12.5px] text-slate-500">
+                UPI Transaction ID: <span id="pPreviewTxnId" class="font-normal font-mono">gddgddgddgdgd</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <p class="text-xs text-slate-500 mt-3 text-center">Ultra-crisp 3x scale PNG for Instagram Stories, WhatsApp, and publishing records.</p>
+      </div>
+
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- VIEW 2: AUTHOR SELECTION LETTER STUDIO                     -->
+    <!-- ========================================================== -->
+    <div id="letterStudioView" class="hidden flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-7xl w-full mx-auto">
+      
+      <!-- Left Controls Sidebar -->
+      <div class="lg:col-span-5 bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-5 md:p-6 space-y-6">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Selection Letter Controls</h2>
+            <p class="text-xs text-slate-400">Generate official editorial certificates & A4 letters</p>
+          </div>
+          <button id="lResetSampleBtn" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition border border-slate-700">
+            Reset Sample
+          </button>
+        </div>
+
+        <!-- Section 1: Author & Writing Info -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">1</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Author & Submission Info</span>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Author / Writer Name</label>
+              <input type="text" id="lWriterNameInput" value="Tanishka Lalwani" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Writing / Article Title</label>
+              <input type="text" id="lWritingTitleInput" value="That type of woman" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Reference No. (Optional)</label>
+                <input type="text" id="lRefInput" value="" placeholder="e.g. CD/2026/012" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Document Date</label>
+                <input type="text" id="lDateInput" value="05/04/2026" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Editorial Assessment Scores -->
+        <div class="border-t border-slate-800 pt-5 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">2</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Editorial Assessment Scores</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Content & Idea</label>
+              <input type="text" id="lScoreContentInput" value="90%" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Expression</label>
+              <input type="text" id="lScoreExpressionInput" value="95%" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Language</label>
+              <input type="text" id="lScoreLanguageInput" value="85%" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Structure & Pres.</label>
+              <input type="text" id="lScoreStructureInput" value="98%" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Overall Editorial Assessment</label>
+              <input type="text" id="lScoreOverallInput" value="93%" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Editor Review Remark</label>
+            <textarea id="lEditorReviewInput" rows="2" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed">Very strong with minor weaknesses</textarea>
+          </div>
+        </div>
+
+        <!-- Section 3: Letter Branding & Signatory -->
+        <div class="border-t border-slate-800 pt-5 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/30">3</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Letterhead Branding & Signer</span>
+          </div>
+
+          <!-- Logo Upload Box -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-slate-200">Header Custom Logo</label>
+              <button id="lResetLogoBtn" type="button" class="text-xs text-sky-400 hover:text-sky-300">Reset Default</button>
+            </div>
+            <input type="file" id="lLogoFileInput" accept="image/*" class="text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+          </div>
+
+          <!-- Signature Upload Box -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-slate-200">Custom Signatory Signature</label>
+              <button id="lResetSignBtn" type="button" class="text-xs text-sky-400 hover:text-sky-300">Reset Default</button>
+            </div>
+            <input type="file" id="lSignFileInput" accept="image/*" class="text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Signer Name</label>
+              <input type="text" id="lSignerNameInput" value="Naseef Ugrapuram" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Signer Designation</label>
+              <input type="text" id="lSignerRoleInput" value="General Manager" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
+          <button id="lDownloadBtn" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/30 transition active:scale-[0.99]">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export PNG (2.5x)
+          </button>
+          
+          <button id="lPrintBtn" class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700 transition">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print / PDF
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Selection Letter Canvas Viewport -->
+      <div class="lg:col-span-7 flex flex-col items-center">
+        <div class="w-full flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Letterpad Preview</span>
+          <span class="text-xs text-slate-500 font-mono">Format: Official A4 Sheet</span>
+        </div>
+
+        <!-- Scrollable preview container for A4 sheet -->
+        <div class="w-full overflow-x-auto p-4 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl flex justify-center">
+          
+          <!-- OFFICIAL A4 LETTER CANVAS -->
+          <div id="printArea" class="a4-container bg-white text-[#2b2b2b] shadow-2xl relative flex flex-col select-none overflow-hidden" style="box-sizing: border-box;">
+            
+            <!-- Top Header Strip -->
+            <header class="h-[98px] flex items-stretch w-full bg-white">
+              <div class="w-[105px] bg-[#eaeaea]"></div>
+              
+              <div class="px-[26px] flex items-center bg-white min-w-[320px]">
+                
+                <!-- Default Official ChromaDiaries Branding -->
+                <div id="lDefaultLogoGroup" class="flex items-center gap-[15px]">
+                  <svg class="w-[66px] h-[66px] flex-shrink-0" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="rotate(-42 55 55)">
+                      <path d="M 52 28.5 C 47.5 19.5, 39.5 13.5, 42.5 6.5 C 47.5 10.5, 53.5 17.5, 52.8 28.5 Z" fill="#889977"/>
+                      <path d="M 53 28.5 C 57.5 18.5, 72.5 12.5, 76.5 8.5 C 78.5 21.5, 70.5 30.5, 57.5 31.8 Z" fill="#525052"/>
+                      <path d="M 54.5 27.5 C 61.5 20.5, 68.5 15.5, 74.5 10.5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+                      <path d="M 40 33 L 70 33 L 71 39 L 39 39 Z" fill="#333232"/>
+                      <path d="M 39 43.5 L 71 43.5 C 73 48, 77 53, 76 57 C 74 65, 66 81, 55 96 C 44 81, 36 65, 34 57 C 33 53, 37 48, 39 43.5 Z" fill="#333232"/>
+                      <circle cx="55" cy="71.5" r="3.2" fill="#ffffff"/>
+                      <line x1="55" y1="74.5" x2="55" y2="96" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+                    </g>
+                  </svg>
+
+                  <div class="flex flex-col justify-center font-brand">
+                    <div class="text-[28.5px] font-bold text-[#333232] tracking-tight leading-none">ChromaDiaries</div>
+                    <div class="text-[17.5px] font-normal text-[#3f3e3e] leading-snug mt-0.5">Web Magazine</div>
+                  </div>
+                </div>
+
+                <!-- Custom Uploaded Logo Element -->
+                <img id="lCustomLogoImg" class="hidden max-h-[72px] max-w-[280px] object-contain" alt="Custom Logo">
+              </div>
+
+              <div class="flex-1 bg-[#eaeaea] flex items-center justify-center px-5">
+                <div class="text-[13.2px] text-[#3b3b3b] font-normal tracking-[0.1px]">
+                  An English Web Magazine for Creative Minds Under 18
+                </div>
+              </div>
+            </header>
+
+            <!-- Letter Body Content -->
+            <div class="px-[64px] pt-[38px] flex-1 flex flex-col">
+              
+              <!-- Ref & Date -->
+              <div class="flex justify-between items-center text-[14px] mb-[46px] text-[#2b2b2b]">
+                <div class="italic">Ref: <span id="lPreviewRefText"></span></div>
+                <div class="italic">Date: <span id="lPreviewDateText" class="font-semibold not-italic">05/04/2026</span></div>
+              </div>
+
+              <!-- Main Heading -->
+              <div class="text-center mb-[46px]">
+                <h2 class="inline-block text-[24.5px] font-bold tracking-[0.6px] uppercase text-[#2e353f] border-b-2 border-[#2e353f] pb-[3px] font-brand">
+                  AUTHOR SELECTION LETTER
+                </h2>
+              </div>
+
+              <!-- Salutation -->
+              <div class="text-[17px] font-medium text-[#222222] mb-[22px]">
+                Dear <span id="lPreviewSalutationName">Tanishka Lalwani</span>,
+              </div>
+
+              <!-- Formal Acceptance Text -->
+              <div class="text-[16.5px] leading-[1.48] text-[#2e2e2e] mb-[26px]">
+                <strong>Greetings from ChromaDiaries!</strong><br>
+                We are happy to inform you that your writing, “<strong id="lPreviewWritingTitle">That type of woman</strong>”, has been selected for publication on our official website. Congratulations on your achievement!
+              </div>
+
+              <!-- Badge -->
+              <div>
+                <div class="inline-block bg-[#333333] text-white py-[7px] px-[18px] rounded-[3px] text-[14.8px] font-semibold tracking-[0.2px] mb-[24px]">
+                  Writing Assessment
+                </div>
+              </div>
+
+              <!-- Assessment Layout: Score Box + Editorial Card -->
+              <div class="flex items-stretch gap-[32px] mb-[38px]">
+                <div class="border border-[#4a4a4a] py-[14px] px-[18px] w-[320px] flex flex-col gap-[5px]">
+                  <div class="flex justify-between text-[14.8px] text-[#242424] leading-[1.4]">
+                    <span>Content & Idea</span>
+                    <span class="font-medium whitespace-nowrap min-w-[58px] text-right">: <span id="lPreviewScoreContent">90%</span></span>
+                  </div>
+                  <div class="flex justify-between text-[14.8px] text-[#242424] leading-[1.4]">
+                    <span>Expression</span>
+                    <span class="font-medium whitespace-nowrap min-w-[58px] text-right">: <span id="lPreviewScoreExpression">95%</span></span>
+                  </div>
+                  <div class="flex justify-between text-[14.8px] text-[#242424] leading-[1.4]">
+                    <span>Language</span>
+                    <span class="font-medium whitespace-nowrap min-w-[58px] text-right">: <span id="lPreviewScoreLanguage">85%</span></span>
+                  </div>
+                  <div class="flex justify-between text-[14.8px] text-[#242424] leading-[1.4]">
+                    <span>Structure & Presentation</span>
+                    <span class="font-medium whitespace-nowrap min-w-[58px] text-right">: <span id="lPreviewScoreStructure">98%</span></span>
+                  </div>
+                  <div class="flex justify-between text-[14.8px] text-[#242424] leading-[1.4]">
+                    <span>Overall Editorial Assessment</span>
+                    <span class="font-medium whitespace-nowrap min-w-[58px] text-right">: <span id="lPreviewScoreOverall">93%</span></span>
+                  </div>
+                </div>
+
+                <div class="flex-1 bg-[#f1f1f1] py-[16px] px-[20px] flex flex-col justify-center rounded-[2px]">
+                  <div class="text-[11.8px] font-bold text-[#2d2d2d] mb-[6px] uppercase tracking-wider">Editor Review:</div>
+                  <div class="text-[18.5px] font-normal text-[#313131] leading-[1.35]" id="lPreviewEditorReview">
+                    Very strong with minor weaknesses
+                  </div>
+                </div>
+              </div>
+
+              <!-- Concluding Encouragement -->
+              <div class="text-[15.6px] leading-[1.45] text-[#3b3b3b] mb-[40px]">
+                These scores show the strengths and areas you can improve in your writing. Keep writing, keep learning, and keep sharing your ideas with us. We look forward to reading more of your writings!
+              </div>
+
+              <!-- Signature Area -->
+              <div class="self-end flex flex-col items-center w-[215px] mr-[25px] mt-[5px] mb-[32px]">
+                <svg id="lDefaultSignatureSvg" class="w-[145px] h-[70px] mb-[6px]" viewBox="0 0 170 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M 58 26 C 36 21, 23 37, 24 53 C 25 66, 42 74, 57 66 C 70 56, 73 34, 61 24 C 50 15, 34 23, 31 35 C 29 44, 38 52, 48 51 C 55 50, 60 44, 61 38" stroke="#111111" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 37 54 L 38 36 L 47 48 L 47 38" stroke="#111111" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 64 45 C 67 36, 70 34, 73 47 C 75 52, 78 40, 81 37 C 84 34, 88 44, 91 42" stroke="#111111" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 112 18 L 108 52" stroke="#111111" stroke-width="2.2" stroke-linecap="round"/>
+                  <path d="M 88 34 L 146 23" stroke="#111111" stroke-width="2.1" stroke-linecap="round"/>
+                  <path d="M 97 40 L 141 31" stroke="#111111" stroke-width="1.9" stroke-linecap="round"/>
+                </svg>
+
+                <img id="lCustomSignatureImg" class="hidden max-w-[170px] max-h-[70px] object-contain mb-[6px]" alt="Custom Signature">
+
+                <div class="w-full h-[1px] bg-[#8c8c8c] mb-[6px]"></div>
+
+                <div class="font-poppins text-[17px] font-medium text-[#2e2e2e] tracking-tight text-center" id="lPreviewSignerName">Naseef Ugrapuram</div>
+                <div class="font-poppins text-[13.5px] font-normal text-[#555555] text-center" id="lPreviewSignerRole">General Manager</div>
+              </div>
+
+            </div>
+
+            <!-- Footer Strip & Bottom Bar -->
+            <footer class="mt-auto">
+              <div class="flex justify-between items-end px-[64px] pb-[26px] text-[12.8px] text-[#333333]">
+                <!-- Phones -->
+                <div class="flex items-center gap-[12px]">
+                  <svg class="w-[18px] h-[18px] flex-shrink-0 text-[#1f1f1f]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/>
+                  </svg>
+                  <div class="flex flex-col leading-[1.25]">
+                    <span>+91 808 663 6371</span>
+                    <span>+91 807 558 5732</span>
+                  </div>
+                </div>
+
+                <!-- Emails -->
+                <div class="flex items-center gap-[12px]">
+                  <svg class="w-[18px] h-[18px] flex-shrink-0 text-[#1f1f1f]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                  <div class="flex flex-col leading-[1.25]">
+                    <span>chromadiariesofficial@gmail.com</span>
+                    <span>chromadiarieseditors@gmail.com</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Decorative Bars -->
+              <div class="h-[2px] bg-[#1a1a1a] w-full"></div>
+              <div class="h-[9px] bg-white w-full"></div>
+              <div class="h-[48px] bg-[#1f1f1f] w-full"></div>
+            </footer>
+
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-500 mt-3 text-center">Export high-resolution PNG for digital distribution or use "Print / PDF" for physical printouts.</p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Global Status Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl">
+    <div id="toastIcon" class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+    <span id="toastMsg" class="text-xs font-semibold">Poster downloaded successfully</span>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCRIPT LOGIC FOR COMBINED SUITE                               -->
+  <!-- ============================================================ -->
+  <script>
+    // Tab switching logic
+    const tabPaymentBtn = document.getElementById('tabPaymentBtn');
+    const tabLetterBtn = document.getElementById('tabLetterBtn');
+    const paymentStudioView = document.getElementById('paymentStudioView');
+    const letterStudioView = document.getElementById('letterStudioView');
+
+    function switchTab(target) {
+      if (target === 'payment') {
+        paymentStudioView.classList.remove('hidden');
+        letterStudioView.classList.add('hidden');
+        tabPaymentBtn.classList.add('active');
+        tabLetterBtn.classList.remove('active');
+        tabPaymentBtn.classList.remove('text-slate-400');
+        tabPaymentBtn.classList.add('text-slate-300');
+        tabLetterBtn.classList.add('text-slate-400');
+      } else {
+        letterStudioView.classList.remove('hidden');
+        paymentStudioView.classList.add('hidden');
+        tabLetterBtn.classList.add('active');
+        tabPaymentBtn.classList.remove('active');
+        tabLetterBtn.classList.remove('text-slate-400');
+        tabLetterBtn.classList.add('text-slate-300');
+        tabPaymentBtn.classList.add('text-slate-400');
+      }
+    }
+
+    // Helper: Toast notification
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    let toastTimeout;
+
+    function showNotification(msg) {
+      clearTimeout(toastTimeout);
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-16', 'opacity-0');
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-16', 'opacity-0');
+      }, 3500);
+    }
+
+    // ==========================================================
+    // 1. PAYMENT POSTER CONTROLS & LOGIC
+    // ==========================================================
+    const pInputAmount = document.getElementById('pInputAmount');
+    const pInputReceiverName = document.getElementById('pInputReceiverName');
+    const pInputReceiverUPI = document.getElementById('pInputReceiverUPI');
+    const pInputBrandTitle = document.getElementById('pInputBrandTitle');
+    const pInputBrandSubtitle = document.getElementById('pInputBrandSubtitle');
+    const pInputHeadline = document.getElementById('pInputHeadline');
+    const pInputDescription = document.getElementById('pInputDescription');
+    const pInputSenderName = document.getElementById('pInputSenderName');
+    const pInputSenderUPI = document.getElementById('pInputSenderUPI');
+    const pInputDateTime = document.getElementById('pInputDateTime');
+    const pInputTxnId = document.getElementById('pInputTxnId');
+
+    const pLogoUploadInput = document.getElementById('pLogoUploadInput');
+    const pLogoSizeSlider = document.getElementById('pLogoSizeSlider');
+    const pLogoSizeVal = document.getElementById('pLogoSizeVal');
+    const pResetLogoBtn = document.getElementById('pResetLogoBtn');
+
+    const pSignUploadInput = document.getElementById('pSignUploadInput');
+    const pToggleSignCheckbox = document.getElementById('pToggleSignCheckbox');
+    const pInputSignTitle = document.getElementById('pInputSignTitle');
+    const pSignSizeSlider = document.getElementById('pSignSizeSlider');
+    const pSignSizeVal = document.getElementById('pSignSizeVal');
+    const pResetSignBtn = document.getElementById('pResetSignBtn');
+    const pSignControlsContainer = document.getElementById('pSignControlsContainer');
+
+    // Previews
+    const pPreviewAmount = document.getElementById('pPreviewAmount');
+    const pPreviewReceiverName = document.getElementById('pPreviewReceiverName');
+    const pPreviewReceiverUPI = document.getElementById('pPreviewReceiverUPI');
+    const pPreviewBrandTitle = document.getElementById('pPreviewBrandTitle');
+    const pPreviewBrandSubtitle = document.getElementById('pPreviewBrandSubtitle');
+    const pPreviewHeadline = document.getElementById('pPreviewHeadline');
+    const pPreviewDescription = document.getElementById('pPreviewDescription');
+    const pPreviewSenderName = document.getElementById('pPreviewSenderName');
+    const pPreviewSenderUPI = document.getElementById('pPreviewSenderUPI');
+    const pPreviewDateTime = document.getElementById('pPreviewDateTime');
+    const pPreviewTxnId = document.getElementById('pPreviewTxnId');
+
+    const pLogoWrapper = document.getElementById('pLogoWrapper');
+    const pDefaultLogoSvg = document.getElementById('pDefaultLogoSvg');
+    const pCustomLogoImg = document.getElementById('pCustomLogoImg');
+
+    const pPreviewSignBlock = document.getElementById('pPreviewSignBlock');
+    const pDefaultSignSvg = document.getElementById('pDefaultSignSvg');
+    const pCustomSignImg = document.getElementById('pCustomSignImg');
+    const pPreviewSignTitle = document.getElementById('pPreviewSignTitle');
+
+    const pSetNowBtn = document.getElementById('pSetNowBtn');
+    const pGenerateTxnBtn = document.getElementById('pGenerateTxnBtn');
+    const pResetBtn = document.getElementById('pResetBtn');
+    const pDownloadBtn = document.getElementById('pDownloadBtn');
+
+    function syncPaymentInputs() {
+      pPreviewAmount.textContent = pInputAmount.value.replace(/[^0-9.,]/g, '') || '0';
+      pPreviewReceiverName.textContent = pInputReceiverName.value || 'Receiver';
+      pPreviewReceiverUPI.textContent = pInputReceiverUPI.value || 'user@upi';
+      pPreviewBrandTitle.textContent = pInputBrandTitle.value || 'ChromaDiaries';
+      pPreviewBrandSubtitle.textContent = pInputBrandSubtitle.value || 'Web Magazine';
+      pPreviewHeadline.textContent = pInputHeadline.value || 'AUTHOR ALLOWANCE PAID';
+      pPreviewDescription.textContent = pInputDescription.value || '';
+      pPreviewSenderName.textContent = pInputSenderName.value || 'Sender';
+      pPreviewSenderUPI.textContent = pInputSenderUPI.value || 'sender@upi';
+      pPreviewDateTime.textContent = pInputDateTime.value || '';
+      pPreviewTxnId.textContent = pInputTxnId.value || '';
+      pPreviewSignTitle.textContent = pInputSignTitle.value || 'Authorized Signatory';
+    }
+
+    [
+      pInputAmount, pInputReceiverName, pInputReceiverUPI, pInputBrandTitle,
+      pInputBrandSubtitle, pInputHeadline, pInputDescription, pInputSenderName,
+      pInputSenderUPI, pInputDateTime, pInputTxnId, pInputSignTitle
+    ].forEach(el => el.addEventListener('input', syncPaymentInputs));
+
+    pLogoSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      pLogoSizeVal.textContent = val + 'px';
+      pLogoWrapper.style.width = val + 'px';
+      pLogoWrapper.style.height = val + 'px';
+    });
+
+    pLogoUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          pCustomLogoImg.src = evt.target.result;
+          pCustomLogoImg.classList.remove('hidden');
+          pDefaultLogoSvg.classList.add('hidden');
+          showNotification('Custom logo applied to Payment Poster');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    pResetLogoBtn.addEventListener('click', () => {
+      pLogoUploadInput.value = '';
+      pCustomLogoImg.classList.add('hidden');
+      pCustomLogoImg.removeAttribute('src');
+      pDefaultLogoSvg.classList.remove('hidden');
+      pLogoSizeSlider.value = 44;
+      pLogoSizeVal.textContent = '44px';
+      pLogoWrapper.style.width = '44px';
+      pLogoWrapper.style.height = '44px';
+      showNotification('Default logo restored');
+    });
+
+    pToggleSignCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        pPreviewSignBlock.classList.remove('hidden');
+        pSignControlsContainer.classList.remove('opacity-40', 'pointer-events-none');
+      } else {
+        pPreviewSignBlock.classList.add('hidden');
+        pSignControlsContainer.classList.add('opacity-40', 'pointer-events-none');
+      }
+    });
+
+    pSignSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      pSignSizeVal.textContent = val + 'px';
+      pDefaultSignSvg.style.width = val + 'px';
+      pCustomSignImg.style.width = val + 'px';
+    });
+
+    pSignUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          pCustomSignImg.src = evt.target.result;
+          pCustomSignImg.classList.remove('hidden');
+          pDefaultSignSvg.classList.add('hidden');
+          showNotification('Custom signature loaded for Payment Poster');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    pResetSignBtn.addEventListener('click', () => {
+      pSignUploadInput.value = '';
+      pCustomSignImg.classList.add('hidden');
+      pCustomSignImg.removeAttribute('src');
+      pDefaultSignSvg.classList.remove('hidden');
+      pSignSizeSlider.value = 95;
+      pSignSizeVal.textContent = '95px';
+      pDefaultSignSvg.style.width = '95px';
+      showNotification('Default signature restored');
+    });
+
+    function getFormattedDate() {
+      const now = new Date();
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+      let hours = now.getHours();
+      const mins = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours.toString().padStart(2, '0');
+      return `${day} ${month} ${year}, ${formattedHours}:${mins} ${ampm}`;
+    }
+
+    pSetNowBtn.addEventListener('click', () => {
+      const formatted = getFormattedDate();
+      pInputDateTime.value = formatted;
+      pPreviewDateTime.textContent = formatted;
+      showNotification('Date and time updated to now');
+    });
+
+    pGenerateTxnBtn.addEventListener('click', () => {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < 14; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      pInputTxnId.value = result;
+      pPreviewTxnId.textContent = result;
+      showNotification('Random transaction ID generated');
+    });
+
+    pResetBtn.addEventListener('click', () => {
+      pInputAmount.value = "200";
+      pInputReceiverName.value = "Muhammed Hashir";
+      pInputReceiverUPI.value = "80868636@gam";
+      pInputBrandTitle.value = "ChromaDiaries";
+      pInputBrandSubtitle.value = "Web Magazine";
+      pInputHeadline.value = "AUTHOR ALLOWANCE PAID";
+      pInputDescription.value = "A small appreciation for your writing and an encouragement to keep creating.";
+      pInputSenderName.value = "Naseef Ugrapuram";
+      pInputSenderUPI.value = "8086636371@fam";
+      pInputDateTime.value = "30 September 2026, 14:45 PM";
+      pInputTxnId.value = "gddgddgddgdgd";
+      pInputSignTitle.value = "Authorized Signatory";
+      pResetLogoBtn.click();
+      pResetSignBtn.click();
+      pToggleSignCheckbox.checked = true;
+      pPreviewSignBlock.classList.remove('hidden');
+      syncPaymentInputs();
+      showNotification('Reset payment poster to default values');
+    });
+
+    // Export Payment Poster via html2canvas (3x Retina Scale)
+    pDownloadBtn.addEventListener('click', async () => {
+      const poster = document.getElementById('posterElement');
+      const origContent = pDownloadBtn.innerHTML;
+      pDownloadBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Rendering 3x Poster...
+      `;
+      pDownloadBtn.disabled = true;
+
+      try {
+        const canvas = await html2canvas(poster, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false
+        });
+
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const safeName = (pInputReceiverName.value || 'Payment').replace(/\s+/g, '_');
+        link.download = `ChromaDiaries_Payment_${safeName}_₹${pInputAmount.value}.png`;
+        link.href = image;
+        link.click();
+        showNotification('Payment poster downloaded successfully!');
+      } catch (err) {
+        console.error('Poster export error:', err);
+        showNotification('Error generating poster image');
+      } finally {
+        pDownloadBtn.innerHTML = origContent;
+        pDownloadBtn.disabled = false;
+      }
+    });
+
+    // ==========================================================
+    // 2. AUTHOR SELECTION LETTER CONTROLS & LOGIC
+    // ==========================================================
+    const lWriterNameInput = document.getElementById('lWriterNameInput');
+    const lWritingTitleInput = document.getElementById('lWritingTitleInput');
+    const lRefInput = document.getElementById('lRefInput');
+    const lDateInput = document.getElementById('lDateInput');
+    const lScoreContentInput = document.getElementById('lScoreContentInput');
+    const lScoreExpressionInput = document.getElementById('lScoreExpressionInput');
+    const lScoreLanguageInput = document.getElementById('lScoreLanguageInput');
+    const lScoreStructureInput = document.getElementById('lScoreStructureInput');
+    const lScoreOverallInput = document.getElementById('lScoreOverallInput');
+    const lEditorReviewInput = document.getElementById('lEditorReviewInput');
+    const lSignerNameInput = document.getElementById('lSignerNameInput');
+    const lSignerRoleInput = document.getElementById('lSignerRoleInput');
+
+    const lPreviewSalutationName = document.getElementById('lPreviewSalutationName');
+    const lPreviewWritingTitle = document.getElementById('lPreviewWritingTitle');
+    const lPreviewRefText = document.getElementById('lPreviewRefText');
+    const lPreviewDateText = document.getElementById('lPreviewDateText');
+    const lPreviewScoreContent = document.getElementById('lPreviewScoreContent');
+    const lPreviewScoreExpression = document.getElementById('lPreviewScoreExpression');
+    const lPreviewScoreLanguage = document.getElementById('lPreviewScoreLanguage');
+    const lPreviewScoreStructure = document.getElementById('lPreviewScoreStructure');
+    const lPreviewScoreOverall = document.getElementById('lPreviewScoreOverall');
+    const lPreviewEditorReview = document.getElementById('lPreviewEditorReview');
+    const lPreviewSignerName = document.getElementById('lPreviewSignerName');
+    const lPreviewSignerRole = document.getElementById('lPreviewSignerRole');
+
+    const lLogoFileInput = document.getElementById('lLogoFileInput');
+    const lDefaultLogoGroup = document.getElementById('lDefaultLogoGroup');
+    const lCustomLogoImg = document.getElementById('lCustomLogoImg');
+    const lResetLogoBtn = document.getElementById('lResetLogoBtn');
+
+    const lSignFileInput = document.getElementById('lSignFileInput');
+    const lDefaultSignatureSvg = document.getElementById('lDefaultSignatureSvg');
+    const lCustomSignatureImg = document.getElementById('lCustomSignatureImg');
+    const lResetSignBtn = document.getElementById('lResetSignBtn');
+    const lResetSampleBtn = document.getElementById('lResetSampleBtn');
+
+    const lDownloadBtn = document.getElementById('lDownloadBtn');
+    const lPrintBtn = document.getElementById('lPrintBtn');
+    const printArea = document.getElementById('printArea');
+
+    function syncLetterInputs() {
+      lPreviewSalutationName.textContent = lWriterNameInput.value.trim() || 'Author';
+      lPreviewWritingTitle.textContent = lWritingTitleInput.value.trim() || 'Untitled';
+      lPreviewRefText.textContent = lRefInput.value.trim();
+      lPreviewDateText.textContent = lDateInput.value.trim() || '05/04/2026';
+      lPreviewScoreContent.textContent = lScoreContentInput.value.trim() || '0%';
+      lPreviewScoreExpression.textContent = lScoreExpressionInput.value.trim() || '0%';
+      lPreviewScoreLanguage.textContent = lScoreLanguageInput.value.trim() || '0%';
+      lPreviewScoreStructure.textContent = lScoreStructureInput.value.trim() || '0%';
+      lPreviewScoreOverall.textContent = lScoreOverallInput.value.trim() || '0%';
+      lPreviewEditorReview.textContent = lEditorReviewInput.value.trim() || 'No review remarks provided.';
+      lPreviewSignerName.textContent = lSignerNameInput.value.trim() || '';
+      lPreviewSignerRole.textContent = lSignerRoleInput.value.trim() || '';
+    }
+
+    [
+      lWriterNameInput, lWritingTitleInput, lRefInput, lDateInput,
+      lScoreContentInput, lScoreExpressionInput, lScoreLanguageInput,
+      lScoreStructureInput, lScoreOverallInput, lEditorReviewInput,
+      lSignerNameInput, lSignerRoleInput
+    ].forEach(el => el.addEventListener('input', syncLetterInputs));
+
+    lLogoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        lCustomLogoImg.src = event.target.result;
+        lCustomLogoImg.classList.remove('hidden');
+        lDefaultLogoGroup.classList.add('hidden');
+        showNotification('Custom logo set on Letterhead');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    lResetLogoBtn.addEventListener('click', () => {
+      lLogoFileInput.value = '';
+      lCustomLogoImg.src = '';
+      lCustomLogoImg.classList.add('hidden');
+      lDefaultLogoGroup.classList.remove('hidden');
+      showNotification('Official ChromaDiaries logo restored on Letterpad');
+    });
+
+    lSignFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        lCustomSignatureImg.src = event.target.result;
+        lCustomSignatureImg.classList.remove('hidden');
+        lDefaultSignatureSvg.classList.add('hidden');
+        showNotification('Custom signature loaded for Letterpad');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    lResetSignBtn.addEventListener('click', () => {
+      lSignFileInput.value = '';
+      lCustomSignatureImg.src = '';
+      lCustomSignatureImg.classList.add('hidden');
+      lDefaultSignatureSvg.classList.remove('hidden');
+      lSignerNameInput.value = 'Naseef Ugrapuram';
+      lSignerRoleInput.value = 'General Manager';
+      syncLetterInputs();
+      showNotification('Default letterpad signatory restored');
+    });
+
+    lResetSampleBtn.addEventListener('click', () => {
+      lWriterNameInput.value = "Tanishka Lalwani";
+      lWritingTitleInput.value = "That type of woman";
+      lRefInput.value = "";
+      lDateInput.value = "05/04/2026";
+      lScoreContentInput.value = "90%";
+      lScoreExpressionInput.value = "95%";
+      lScoreLanguageInput.value = "85%";
+      lScoreStructureInput.value = "98%";
+      lScoreOverallInput.value = "93%";
+      lEditorReviewInput.value = "Very strong with minor weaknesses";
+      lSignerNameInput.value = "Naseef Ugrapuram";
+      lSignerRoleInput.value = "General Manager";
+      lResetLogoBtn.click();
+      lResetSignBtn.click();
+      syncLetterInputs();
+      showNotification('Selection Letter sample reset to default');
+    });
+
+    // Print / PDF Button
+    lPrintBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    // High-Res Export for Letterpad (2.5x Scale)
+    lDownloadBtn.addEventListener('click', async () => {
+      const origText = lDownloadBtn.innerHTML;
+      try {
+        lDownloadBtn.disabled = true;
+        lDownloadBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Exporting A4 PNG...
+        `;
+
+        const canvas = await html2canvas(printArea, {
+          scale: 2.5,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const authorNameSanitized = (lWriterNameInput.value.trim() || 'Author').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `ChromaDiaries_Selection_Letter_${authorNameSanitized}.png`;
+
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png', 1.0);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification('Selection letter downloaded successfully!');
+      } catch (err) {
+        console.error('Letterpad export error:', err);
+        showNotification('Export failed. You can use Print / PDF instead.');
+      } finally {
+        lDownloadBtn.disabled = false;
+        lDownloadBtn.innerHTML = origText;
+      }
+    });
+
+    // Sync author/receiver name helper between studios
+    function syncAuthorNames() {
+      const currentTab = paymentStudioView.classList.contains('hidden') ? 'letter' : 'payment';
+      if (currentTab === 'payment') {
+        const name = pInputReceiverName.value;
+        lWriterNameInput.value = name;
+        syncLetterInputs();
+        showNotification(`Copied "${name}" to Author Selection Letter`);
+      } else {
+        const name = lWriterNameInput.value;
+        pInputReceiverName.value = name;
+        syncPaymentInputs();
+        showNotification(`Copied "${name}" to Payment Poster Recipient`);
+      }
+    }
+
+    // Initialize initial state on DOM load
+    window.addEventListener('DOMContentLoaded', () => {
+      syncPaymentInputs();
+      syncLetterInputs();
+    });
+  </script>
+</body>
+</html>
